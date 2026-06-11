@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>장비 데이터 분석 프로젝트 — 목적·가설·검증·해석</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html">⚙️ 장비 데이터 분석 프로젝트</a>
+  <a href="mission-a.html">Mission A 건설장비</a>
+  <a href="mission-b.html">Mission B 제조장비</a>
+</div></nav>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="tag">공공데이터 분석 및 시각화 프로젝트</span>
+    <h1>데이터로 장비 고장에 미리 대비하기</h1>
+    <p>복잡한 모델 없이 <strong>개수 세기 · 비율 · 그룹별 평균 비교</strong>만으로,
+    "무엇부터 점검할지"와 "언제 알람을 울릴지"를 찾아낸 두 개의 분석 이야기입니다.</p>
+  </header>
+
+  <section class="section">
+    <h2>분석은 이렇게 진행했어요</h2>
+    <p class="lead">두 미션 모두 같은 4단계 구조를 따릅니다.</p>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v">1️⃣ 목적</div><div class="k">왜 분석하나 — 비즈니스 문제 정의</div></div>
+      <div class="kpi"><div class="v">2️⃣ 가설</div><div class="k">무엇을 확인할 건가 — 현장 경험 기반 추측</div></div>
+      <div class="kpi"><div class="v">3️⃣ 검증</div><div class="k">데이터로 확인 — 차트와 숫자로 채택/기각</div></div>
+      <div class="kpi"><div class="v">4️⃣ 해석</div><div class="k">그래서 뭘 할까 — 액션포인트 도출</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>두 개의 미션</h2>
+    <div class="mission-grid">
+      <a class="mission-card" href="mission-a.html">
+        <div class="emoji">🚜</div>
+        <h3>Mission A — 건설장비 예지보전</h3>
+        <p>월 3~4건의 돌발 고장, 건당 약 2억 원 손실.
+        가동시간·진동·부품 종류 세 가지 단서로 <strong>"지금 당장 점검해야 할 부품 174개"</strong>와
+        최우선 방문 장비를 특정했습니다.</p>
+        <table>
+          <tr><th>핵심 발견</th><th class="num">수치</th></tr>
+          <tr><td>점검 임박 부품 (잔존수명 100시간 미만)</td><td class="num">174개 (17.4%)</td></tr>
+          <tr><td>복합 위험군(고가동+고진동)의 평균 잔존수명</td><td class="num">76시간</td></tr>
+          <tr><td>Gear 부품 평균 수명 (Engine 대비)</td><td class="num">203시간 (43%)</td></tr>
+        </table>
+        <span class="go">분석 보기 →</span>
+      </a>
+      <a class="mission-card" href="mission-b.html">
+        <div class="emoji">⚙️</div>
+        <h3>Mission B — 제조장비 이상탐지</h3>
+        <p>라인 1일 중단 시 약 5억 원 손실.
+        센서 4종을 비교해 <strong>"진동 2.6을 넘으면 알람 10번 중 8번은 진짜 고장"</strong>이라는
+        경보 기준을 만들었습니다.</p>
+        <table>
+          <tr><th>핵심 발견</th><th class="num">수치</th></tr>
+          <tr><td>고장 건수 (전체 7,672건 중)</td><td class="num">767건 (10.0%)</td></tr>
+          <tr><td>1차 경보선(진동 ≥ 2.6) 알람 적중률</td><td class="num">79.9%</td></tr>
+          <tr><td>고장 장비 진동 평균 (정상 1.51 대비)</td><td class="num">2.55 (1.7배)</td></tr>
+        </table>
+        <span class="go">분석 보기 →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>이 분석에서 쓴 도구</h2>
+    <p class="lead">머신러닝도, 어려운 통계도 쓰지 않았습니다. 아래 다섯 가지면 충분했습니다.</p>
+    <div class="card">
+      <table>
+        <tr><th>도구</th><th>어디에 썼나</th></tr>
+        <tr><td>개수 세기 · 비율(%)</td><td>고장 건수, 점검 임박 부품 수, 구간별 고장률</td></tr>
+        <tr><td>그룹별 평균 비교</td><td>정상 vs 고장 센서값, 부품 종류별 수명</td></tr>
+        <tr><td>히스토그램</td><td>두 그룹의 분포가 얼마나 겹치는지 확인</td></tr>
+        <tr><td>막대그래프</td><td>구간별·그룹별 차이를 한눈에 비교</td></tr>
+        <tr><td>산점도</td><td>두 값이 함께 움직이는 경향 확인</td></tr>
+      </table>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  교육용 데이터 분석 프로젝트 · 목적 → 가설 → 검증 → 해석 ·
+  <a href="https://github.com/ggplab/alice-equipment-analysis">GitHub 저장소</a>
+</footer>
+</body>
+</html>

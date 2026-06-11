@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission A — 건설장비 예지보전 분석</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* Mission A 전용 추가 스타일 */
+  .kpi-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 20px 0 28px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 24px;
+    flex: 1;
+    min-width: 160px;
+    text-align: center;
+  }
+  .kpi .v {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .kpi .v.danger { color: var(--no); }
+  .kpi .v.warn   { color: var(--warn); }
+  .kpi .k {
+    font-size: 13px;
+    color: var(--sub);
+    margin-top: 4px;
+  }
+  figure {
+    margin: 18px 0 0;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  figure img {
+    width: 100%;
+    display: block;
+  }
+  figcaption {
+    font-size: 13px;
+    color: var(--sub);
+    padding: 10px 16px 12px;
+    text-align: center;
+    border-top: 1px solid var(--line);
+  }
+  .callout {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+  .callout.result {
+    border-left-color: var(--ok);
+    background: var(--ok-soft);
+  }
+  .callout.warn {
+    border-left-color: var(--warn);
+    background: var(--warn-soft);
+  }
+  .callout.danger {
+    border-left-color: var(--no);
+    background: var(--no-soft);
+  }
+  .callout.insight {
+    border-left-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .step-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    margin: 18px 0 4px;
+    text-transform: uppercase;
+  }
+  .hypo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+  .hypo-table th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid var(--line);
+  }
+  .hypo-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .hypo-table tr:last-child td { border-bottom: none; }
+  .hypo-table tr:hover td { background: var(--bg); }
+
+  .risk-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+  .risk-table th {
+    background: #fff1f2;
+    color: var(--no);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid #fecdd3;
+  }
+  .risk-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .risk-table tr:last-child td { border-bottom: none; }
+  .risk-table .high { color: var(--no); font-weight: 700; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .compare-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .compare-box .big-num {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .compare-box .label { font-size: 13px; color: var(--sub); margin-top: 4px; }
+  .compare-box.red  .big-num { color: var(--no); }
+  .compare-box.blue .big-num { color: var(--ok); }
+
+  .action-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: action-counter;
+    margin: 16px 0;
+  }
+  .action-list > li {
+    counter-increment: action-counter;
+    display: flex;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .action-list > li::before {
+    content: counter(action-counter);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .action-list > li > div { flex: 1; }
+  .action-list strong { display: block; font-size: 16px; margin-bottom: 4px; }
+  .why { display: block; font-size: 14px; color: var(--sub); line-height: 1.6; margin-top: 2px; }
+
+  .footer {
+    text-align: center;
+    color: var(--sub);
+    font-size: 13px;
+    padding: 32px 20px;
+    border-top: 1px solid var(--line);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html">⚙️ 장비 데이터 분석 프로젝트</a>
+  <a href="mission-a.html" class="active">Mission A 건설장비</a>
+  <a href="mission-b.html">Mission B 제조장비</a>
+</div></nav>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="tag">Mission A · 건설장비 예지보전</span>
+    <h1>어떤 부품부터 점검해야 할까?</h1>
+    <p>1,000개 부품 데이터로 찾아낸 "지금 당장 위험한 부품"과 예방 점검 우선순위</p>
+  </header>
+
+  <!-- 1. 목적 -->
+  <section class="section">
+    <h2>1. 목적 — 왜 분석하나</h2>
+    <p class="lead">건설장비가 갑자기 멈추면 복구까지 수억 원이 날아간다. 데이터로 고장 전에 신호를 잡을 수 있을까?</p>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="v">1,000</div>
+        <div class="k">분석한 부품 수</div>
+      </div>
+      <div class="kpi">
+        <div class="v">365h</div>
+        <div class="k">평균 잔존수명</div>
+      </div>
+      <div class="kpi">
+        <div class="v danger">174개</div>
+        <div class="k">지금 당장 점검 필요<br>(잔존수명 100h 미만)</div>
+      </div>
+      <div class="kpi">
+        <div class="v warn">17.4%</div>
+        <div class="k">전체 부품 중 위험 비율</div>
+      </div>
+    </div>
+
+    <p>현재 현장에서는 <strong>월 3~4건의 돌발 고장</strong>이 발생하고 있으며, 건당 약 <strong>2억 원</strong>의 손실이 발생합니다. 이 분석의 목적은 단 하나입니다. <strong>"어떤 부품부터 점검하러 가야 하는가?"</strong>를 데이터로 찾아내는 것입니다.</p>
+
+    <div class="callout">
+      <strong>잔존수명(RUL, Remaining Useful Life)이란?</strong><br>
+      부품이 지금부터 정상 작동할 수 있는 예상 남은 시간(시간 단위)입니다. 숫자가 낮을수록 교체·점검이 급합니다. 이 분석에서는 <strong>100시간 미만</strong>을 "지금 당장 점검 필요" 기준으로 정의했습니다.
+    </div>
+  </section>
+
+  <!-- 2. 가설 -->
+  <section class="section">
+    <h2>2. 가설 — 무엇을 확인할 건가</h2>
+    <p class="lead">분석 전에 "이럴 것 같다"는 예상을 먼저 세우고, 데이터로 맞는지 틀리는지 확인합니다.</p>
+
+    <table class="hypo-table">
+      <thead>
+        <tr>
+          <th style="width:8%">#</th>
+          <th style="width:52%">가설 (예상)</th>
+          <th style="width:20%">확인 방법</th>
+          <th style="width:20%">결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>오래 사용한 부품일수록 남은 수명이 짧을 것이다</td>
+          <td>가동시간 구간별 평균 잔존수명 비교</td>
+          <td><span class="badge ok">채택</span></td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>진동이 심한 부품일수록 남은 수명이 짧을 것이다</td>
+          <td>진동 구간별 평균 잔존수명 비교</td>
+          <td><span class="badge ok">채택</span></td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>부품 종류에 따라 수명이 다를 것이다 (Gear가 특히 짧을 것)</td>
+          <td>부품 타입별 평균 + 분포 비교</td>
+          <td><span class="badge ok">채택</span></td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>온도·압력이 높아도 수명이 짧을 것이다</td>
+          <td>온도·압력 구간별 평균 잔존수명 비교</td>
+          <td><span class="badge partial">부분 채택</span></td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>가동시간도 많고 진동도 심하면 훨씬 위험할 것이다</td>
+          <td>두 조건 동시 충족 그룹 vs 나머지 비교</td>
+          <td><span class="badge ok">채택</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 3. 검증 -->
+  <section class="section">
+    <h2>3. 검증 — 데이터로 확인하기</h2>
+
+    <!-- 가설 1 -->
+    <div class="card">
+      <h3>가설 1. 오래 쓴 부품일수록 남은 수명이 짧다 <span class="badge ok">채택</span></h3>
+
+      <p class="step-label">어떻게 확인했나</p>
+      <p>부품 1,000개의 가동시간(지금까지 사용한 총 시간)과 잔존수명을 점으로 찍어 산점도를 그렸습니다. 그 다음, 가동시간을 하위 25%, 25~50%, 50~75%, 상위 25%로 나눠 각 구간의 평균 잔존수명을 막대그래프로 비교했습니다.</p>
+
+      <figure>
+        <img src="charts/a/h1_scatter_hours_rul.png" alt="가동시간과 잔존수명의 산점도">
+        <figcaption>가동시간이 늘어날수록 점들이 왼쪽 아래에서 오른쪽 위로 모이지 않고, 오른쪽으로 갈수록 점들이 아래쪽에 몰리는 경향이 보입니다.</figcaption>
+      </figure>
+
+      <figure>
+        <img src="charts/a/h1_bar_hours_rul.png" alt="가동시간 구간별 평균 잔존수명 막대그래프">
+        <figcaption>가동시간이 가장 적은 그룹(하위 25%)은 평균 잔존수명 600h, 가장 많은 그룹(상위 25%)은 152h — 약 4배 차이입니다.</figcaption>
+      </figure>
+
+      <div class="callout result">
+        결과: 하위 25% 평균 <strong>600h</strong> → 상위 25% 평균 <strong>152h</strong> — 가동시간이 많을수록 남은 수명이 일관되게 줄어듭니다.
+      </div>
+
+      <p>구간이 하나씩 올라갈 때마다 잔존수명이 눈에 띄게 줄어들었습니다. 특히 상위 25%(가동시간 3,689시간 이상) 구간에서 평균 잔존수명이 152시간으로 뚝 떨어지는 점이 두드러집니다. 가동시간은 점검 우선순위를 결정할 때 가장 먼저 봐야 할 지표입니다.</p>
+    </div>
+
+    <!-- 가설 2 -->
+    <div class="card">
+      <h3>가설 2. 진동이 심한 부품일수록 남은 수명이 짧다 <span class="badge ok">채택</span></h3>
+
+      <p class="step-label">어떻게 확인했나</p>
+      <p>진동 수치(0~5)를 낮음·중간·높음·매우 높음 4구간으로 나눠 각 구간의 평균 잔존수명을 비교했습니다. 진동 값이 클수록 부품이 더 심하게 흔들리고 있다는 의미입니다.</p>
+
+      <figure>
+        <img src="charts/a/h2_bar_vib_rul.png" alt="진동 구간별 평균 잔존수명 막대그래프">
+        <figcaption>진동이 낮은 그룹(0~1.8)은 평균 514h, 진동이 매우 높은 그룹(4.1~5.0)은 평균 226h로, 진동이 높아질수록 잔존수명이 짧아집니다.</figcaption>
+      </figure>
+
+      <div class="callout result">
+        결과: 진동 낮음 평균 <strong>514h</strong> → 진동 매우 높음 평균 <strong>226h</strong> — 진동이 강할수록 남은 수명이 절반 이하로 줄어듭니다.
+      </div>
+
+      <p>진동 수치가 한 단계씩 올라갈 때마다 잔존수명이 꾸준히 줄어들었습니다. 진동 수치 4.1을 넘어가는 부품은 평균 잔존수명이 226시간밖에 남지 않습니다. 현장에서 "기계가 많이 떨린다"는 느낌이 들면 즉시 점검을 검토할 필요가 있습니다.</p>
+    </div>
+
+    <!-- 가설 3 -->
+    <div class="card">
+      <h3>가설 3. 부품 종류에 따라 수명이 다르다 (Gear가 특히 짧다) <span class="badge ok">채택</span></h3>
+
+      <p class="step-label">어떻게 확인했나</p>
+      <p>Engine, Gear, Hydraulic Cylinder 세 종류의 부품을 따로 모아, 각각의 평균 잔존수명을 막대그래프로 그렸습니다. 그 다음, 개별 부품들의 수명이 어떻게 퍼져 있는지 박스플롯으로 확인했습니다.</p>
+
+      <figure>
+        <img src="charts/a/h3_bar_type_rul.png" alt="부품 종류별 평균 잔존수명 막대그래프">
+        <figcaption>Gear 평균 203h, Hydraulic Cylinder 평균 402h, Engine 평균 469h — Gear의 수명이 Engine의 절반도 안 됩니다.</figcaption>
+      </figure>
+
+      <figure>
+        <img src="charts/a/h3_box_type_rul.png" alt="부품 종류별 잔존수명 분포 박스플롯">
+        <figcaption>각 박스는 부품의 중간 50% 범위를 나타냅니다. Gear 박스가 다른 부품들보다 훨씬 아래에, 좁게 몰려 있는 것을 볼 수 있습니다.</figcaption>
+      </figure>
+
+      <div class="callout danger">
+        핵심 발견: Gear의 평균 잔존수명은 <strong>203h</strong>로, Engine(469h)의 절반도 안 됩니다. Gear는 구조적으로 마모가 빠른 부품입니다.
+      </div>
+
+      <p>박스플롯에서 Gear의 박스가 다른 부품들보다 전체적으로 낮게 위치한 것을 확인할 수 있습니다. 단순히 평균이 낮은 것을 넘어, 잔존수명 분포 자체가 아래쪽에 집중돼 있습니다. Gear 부품은 다른 부품들보다 점검 주기를 짧게 가져가야 합니다.</p>
+    </div>
+
+    <!-- 가설 4 -->
+    <div class="card">
+      <h3>가설 4. 온도·압력이 높으면 수명이 짧다 <span class="badge partial">부분 채택</span></h3>
+
+      <p class="step-label">어떻게 확인했나</p>
+      <p>온도와 압력을 각각 4구간으로 나눠 구간별 평균 잔존수명을 비교했습니다. "영향이 있는가"와 "얼마나 강한 영향인가"를 함께 확인했습니다.</p>
+
+      <figure>
+        <img src="charts/a/h4_bar_temp_pressure_rul.png" alt="온도·압력 구간별 평균 잔존수명 비교">
+        <figcaption>온도와 압력 모두 높아질수록 잔존수명이 줄어들지만, 가동시간(600h→152h)이나 진동(514h→226h)에 비해 그 폭이 작습니다.</figcaption>
+      </figure>
+
+      <div class="callout warn">
+        결과: 온도 낮음 476h → 온도 매우 높음 261h / 압력 낮음 434h → 압력 매우 높음 269h — 영향은 있으나, 가동시간·진동보다 약합니다.
+      </div>
+
+      <p>온도와 압력이 높아질수록 잔존수명이 줄어드는 경향은 확인됐습니다. 그러나 가동시간(4배 차이)이나 진동(2.3배 차이)에 비해 그 폭이 상대적으로 작습니다. 온도·압력은 보조 지표로 참고하되, 점검 우선순위를 결정할 때 주요 기준으로 삼기에는 약합니다. 이 때문에 "부분 채택"으로 판정합니다.</p>
+    </div>
+
+    <!-- 가설 5 -->
+    <div class="card">
+      <h3>가설 5. 가동시간도 많고 진동도 심하면 훨씬 위험하다 <span class="badge ok">채택</span></h3>
+
+      <p class="step-label">어떻게 확인했나</p>
+      <p>가동시간 상위 25%(3,689시간 이상)이면서 동시에 진동도 상위 25%(4.1 이상)인 부품을 "복합 위험군"으로 정의했습니다. 이 그룹의 평균 잔존수명을 나머지 세 그룹과 비교했습니다.</p>
+
+      <figure>
+        <img src="charts/a/h5_bar_combined_risk.png" alt="복합 위험 그룹별 평균 잔존수명 비교">
+        <figcaption>두 조건을 동시에 만족하는 그룹(n=75)은 평균 76h — 아무 문제 없는 그룹(480h)의 6분의 1 수준입니다.</figcaption>
+      </figure>
+
+      <div class="grid-2">
+        <div class="compare-box red">
+          <div class="big-num">76h</div>
+          <div class="label">가동시간 높음 + 진동 높음<br>(동시 해당 75개 부품)</div>
+        </div>
+        <div class="compare-box blue">
+          <div class="big-num">480h</div>
+          <div class="label">둘 다 낮음<br>(575개 부품)</div>
+        </div>
+      </div>
+
+      <div class="callout danger">
+        두 가지 위험 조건이 겹치면 잔존수명이 <strong>76h</strong>로 급락합니다. 아무 문제 없는 부품(480h)에 비해 6배 이상 차이가 납니다.
+      </div>
+
+      <p>가동시간이나 진동 하나만으로는 185h~291h 수준이지만, 두 조건이 동시에 해당되는 75개 부품의 평균 잔존수명은 76시간입니다. 단 하루 10시간씩 운전하면 8일도 안 남은 수명입니다. 두 조건을 동시에 만족하는 부품은 최우선 점검 대상입니다.</p>
+    </div>
+
+    <!-- 위험군 도출 -->
+    <div class="card">
+      <h3>지금 당장 점검이 필요한 부품 — 잔존수명 100시간 미만</h3>
+
+      <p class="step-label">어떻게 찾았나</p>
+      <p>전체 1,000개 부품 중 잔존수명이 100시간 미만인 부품을 골라, 어떤 장비에 몰려 있는지 세었습니다. 임박 부품이 많은 장비를 먼저 방문해야 한 번 이동으로 여러 부품을 점검할 수 있습니다.</p>
+
+      <figure>
+        <img src="charts/a/risk_machine_bar.png" alt="장비별 임박 부품 수 막대그래프">
+        <figcaption>빨간 막대(3개 이상)는 매우 긴급, 주황 막대(1~2개)는 점검 권고 장비입니다. M001·M014가 각 13개로 가장 많습니다.</figcaption>
+      </figure>
+
+      <p>잔존수명 100시간 미만 부품이 특정 장비에 집중되어 있음을 확인할 수 있습니다. 상위 5대 장비를 우선 방문하는 것만으로도 임박 부품의 절반 이상을 커버할 수 있습니다.</p>
+
+      <table class="risk-table">
+        <thead>
+          <tr>
+            <th>순위</th>
+            <th>장비 번호</th>
+            <th>임박 부품 수</th>
+            <th>긴급도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1위</td><td class="high">M001</td><td class="high">13개</td><td>🔴 매우 긴급</td></tr>
+          <tr><td>2위</td><td class="high">M014</td><td class="high">13개</td><td>🔴 매우 긴급</td></tr>
+          <tr><td>3위</td><td class="high">M019</td><td class="high">12개</td><td>🔴 매우 긴급</td></tr>
+          <tr><td>4위</td><td class="high">M012</td><td class="high">12개</td><td>🔴 매우 긴급</td></tr>
+          <tr><td>5위</td><td>M007</td><td>11개</td><td>🟠 긴급</td></tr>
+          <tr><td colspan="4" style="font-size:13px; color:var(--sub); padding: 8px 14px;">전체 174개 부품, 20대 장비 모두 1개 이상 해당</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- 4. 해석 -->
+  <section class="section">
+    <h2>4. 해석 — 알게 된 것</h2>
+
+    <div class="callout insight">
+      <strong>발견 1. 가동시간이 가장 강력한 신호다</strong><br>
+      가동시간이 3,689시간을 넘어서면 평균 잔존수명이 152시간으로 급감합니다. 가동시간 상위 25% 부품과 하위 25% 부품의 남은 수명 차이는 4배(152h vs 600h)에 달합니다.
+    </div>
+
+    <div class="callout insight">
+      <strong>발견 2. 진동도 중요한 신호 — 4.1 이상이면 주의</strong><br>
+      진동 수치가 4.1을 넘으면 평균 잔존수명이 226시간으로 절반 이하로 떨어집니다. 현장에서 "기계가 심하게 떨린다"는 신호를 무시하지 말아야 합니다.
+    </div>
+
+    <div class="callout danger">
+      <strong>발견 3. Gear 부품은 구조적으로 수명이 짧다 — 따로 관리해야</strong><br>
+      Gear의 평균 잔존수명(203h)은 Engine(469h)의 43%에 불과합니다. 같은 가동 조건이어도 Gear는 훨씬 빨리 교체 시점이 옵니다. 현재의 점검 주기 기준이 모든 부품에 동일하게 적용되고 있다면 Gear는 별도 기준이 필요합니다.
+    </div>
+
+    <div class="callout warn">
+      <strong>발견 4. 두 조건이 겹치면 6배 위험해진다</strong><br>
+      가동시간 3,689h 이상 + 진동 4.1 이상을 동시에 충족하는 75개 부품의 평균 잔존수명은 76시간. 이 부품들은 지금 당장 교체 계획이 필요합니다.
+    </div>
+
+    <p>온도와 압력도 잔존수명과 관련이 있지만, 가동시간·진동에 비해 영향 폭이 작아 단독 점검 기준으로 삼기에는 부족합니다. 점검 판단을 내릴 때는 <strong>가동시간 → 진동 → 부품 종류(Gear 여부)</strong> 순서로 확인하는 것이 효율적입니다.</p>
+  </section>
+
+  <!-- 5. 액션포인트 -->
+  <section class="section">
+    <h2>5. 액션포인트 — 내일부터 할 일</h2>
+    <p class="lead">분석 결과를 실제 점검 계획으로 바꿉니다. 모든 임계값은 이번 데이터 기준이며, 현장 적용 시 전문가와 함께 검토하세요.</p>
+
+    <ol class="action-list">
+      <li>
+        <div>
+          <strong>가동시간 3,689시간 이상 + 진동 4.1 이상인 부품 즉시 점검 목록 작성</strong>
+          <span class="why">
+            이 두 조건을 동시에 만족하는 75개 부품의 평균 잔존수명은 76시간입니다. 하루 8시간 운전 기준 열흘도 남지 않은 수준입니다. 이 부품들을 먼저 추출해 교체 일정을 잡는 것이 가장 급합니다.<br>
+            <em>기대 효과: 월 3~4건 돌발 고장 중 "두 조건 동시 해당" 케이스를 예방할 경우, 건당 2억 기준 연간 최대 수억 원의 손실 방지 가능 (추정치, 실제 효과는 현장 검증 필요)</em>
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>M001·M014·M019·M012 — 이 4대 장비 우선 방문</strong>
+          <span class="why">
+            각각 12~13개의 임박 부품(잔존수명 100시간 미만)이 집중되어 있습니다. 한 번 방문에 여러 부품을 동시에 점검할 수 있어 이동 비용과 시간을 절약할 수 있습니다. 이 4대 장비에만 전체 임박 부품의 28%(174개 중 50개)가 몰려 있습니다.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Gear 부품의 점검 주기를 Engine·Hydraulic Cylinder보다 짧게 설정</strong>
+          <span class="why">
+            Gear의 평균 잔존수명(203h)은 Engine(469h)의 절반도 안 됩니다. 현재 모든 부품에 동일한 점검 주기를 적용하고 있다면, Gear에 대해서만 별도로 더 짧은 교체 기준을 만들 것을 권고합니다.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>일상 점검 체크리스트에 "가동시간"과 "진동 체감" 항목 추가</strong>
+          <span class="why">
+            가동시간과 진동이 잔존수명과 가장 밀접하게 연결된 지표입니다. 현장 담당자가 매주 가동시간 누계(3,689시간 도달 여부)와 진동 이상 여부를 기록한다면, 고장 예고를 더 빠르게 포착할 수 있습니다.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>잔존수명 100시간 미만 부품 174개에 대한 교체 부품 선발주</strong>
+          <span class="why">
+            교체 부품이 없어서 점검 후에도 가동을 멈춰야 하는 상황을 방지합니다. 174개 중 특히 Gear 비율이 높은지 추가 확인 후 우선 발주 목록을 작성하세요.
+          </span>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+</div>
+
+<footer class="footer">
+  교육용 데이터 분석 프로젝트 · Mission A 건설장비 예지보전 · 1,000개 부품 데이터 기반
+</footer>
+
+</body>
+</html>
