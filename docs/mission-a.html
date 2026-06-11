@@ -210,8 +210,25 @@
 
     <div class="callout">
       <strong>잔존수명(RUL, Remaining Useful Life)이란?</strong><br>
-      부품이 지금부터 정상 작동할 수 있는 예상 남은 시간(시간 단위)입니다. 숫자가 낮을수록 교체·점검이 급합니다. 이 분석에서는 <strong>100시간 미만</strong>을 "지금 당장 점검 필요" 기준으로 정의했습니다.
+      부품이 지금부터 정상 작동할 수 있는 예상 남은 시간(시간 단위)입니다. 데이터 제공처에서 산출한 <strong>예측값</strong>이며, 숫자가 낮을수록 교체·점검이 급합니다. 이 분석에서는 <strong>100시간 미만</strong>을 "지금 당장 점검 필요" 기준으로 정의했습니다.
     </div>
+
+    <h3 style="margin-top:28px;">변수 설명 (제공 자료 기준)</h3>
+    <table class="hypo-table">
+      <thead>
+        <tr><th>컬럼명</th><th>의미</th><th>단위</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Component_ID / Machine_ID</td><td>부품 고유 식별자 / 부품이 속한 기계 식별자(20대)</td><td>-</td></tr>
+        <tr><td>Component_Type</td><td>부품 유형 — Engine, Hydraulic Cylinder, Gear</td><td>-</td></tr>
+        <tr><td>Vibration</td><td>진동 수준 측정</td><td>임의 단위</td></tr>
+        <tr><td>Temperature</td><td>부품 작동 온도</td><td>°C</td></tr>
+        <tr><td>Pressure</td><td>부품에 가해지는 압력</td><td>psi</td></tr>
+        <tr><td>Operating_Hours</td><td>누적 작동 시간</td><td>hours</td></tr>
+        <tr><td>Timestamp / Last_Service_Date</td><td>측정 시점 / 마지막 점검(정비) 일자</td><td>-</td></tr>
+        <tr><td>Remaining_Useful_Life</td><td>부품의 잔여 유용 수명 (예측값)</td><td>hours</td></tr>
+      </tbody>
+    </table>
   </section>
 
   <!-- 2. 가설 -->
