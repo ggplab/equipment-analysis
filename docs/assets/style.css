@@ -187,6 +187,32 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .kpi .v { font-size: 24px; font-weight: 800; color: var(--accent); }
 .kpi .k { font-size: 13px; color: var(--sub); margin-top: 2px; }
 
+.hero .headline-num { color: var(--accent); }
+.hero .therefore {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-top: 16px;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.hero .basis-note { font-size: 13.5px; color: var(--sub); margin-top: 10px; }
+
+.src-box {
+  background: var(--bg);
+  border: 1px dashed #c8ccd0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 18px 0 0;
+  font-size: 13.5px;
+  color: var(--sub);
+  line-height: 1.6;
+}
+.src-box strong { color: var(--ink); }
+.src-box a { color: var(--accent); word-break: break-all; }
+
 .deep-dive {
   background: #faf5ff;
   border: 1px solid #e9d5ff;
