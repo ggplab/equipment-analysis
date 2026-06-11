@@ -187,6 +187,30 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .kpi .v { font-size: 24px; font-weight: 800; color: var(--accent); }
 .kpi .k { font-size: 13px; color: var(--sub); margin-top: 2px; }
 
+.deep-dive {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-left: 4px solid #9333ea;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 16px 0 4px;
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.deep-dive .dd-label {
+  display: inline-block;
+  background: #9333ea;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.deep-dive p { margin: 4px 0; }
+.deep-dive strong { color: #6b21a8; }
+
 .footer {
   border-top: 1px solid var(--line);
   margin-top: 60px;
