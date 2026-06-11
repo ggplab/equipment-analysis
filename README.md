@@ -1,8 +1,8 @@
-# alice-equipment-analysis
+# equipment-analysis
 
 교육용 공공데이터(장비 센서) 분석 프로젝트 — **목적 → 가설 → 검증 → 해석** 구조로 진행한 두 개의 분석을 정적 웹사이트로 정리했습니다.
 
-🔗 **사이트**: https://ggplab.github.io/alice-equipment-analysis/
+🔗 **사이트**: https://ggplab.github.io/equipment-analysis/
 
 ## 두 개의 미션
 

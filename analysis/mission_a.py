@@ -13,8 +13,8 @@ import os
 plt.rcParams['font.family'] = 'AppleGothic'
 plt.rcParams['axes.unicode_minus'] = False
 
-DATA_PATH = '/Users/limjung/Projects/alice-equipment-analysis/data/construction_machine_data.csv'
-CHART_DIR = '/Users/limjung/Projects/alice-equipment-analysis/docs/charts/a'
+DATA_PATH = '/Users/limjung/Projects/equipment-analysis/data/construction_machine_data.csv'
+CHART_DIR = '/Users/limjung/Projects/equipment-analysis/docs/charts/a'
 os.makedirs(CHART_DIR, exist_ok=True)
 
 ACCENT  = '#2563eb'
